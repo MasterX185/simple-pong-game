@@ -1,10 +1,13 @@
-import pygame
+import pygame 
 import random # Wichtig: Dieses Modul importieren!
 
 pygame.init()
 
 player_lives = 3
 font = pygame.font.Font(None, 74) # Eine Schriftart für die Anzeige
+
+ki_lives = 3 # Lebensanzahl für die KI
+font_ki = pygame.font.Font(None, 74) # Schriftart für die KI
 
 # --- Fenster- und Farbeinstellungen ---
 screen_width = 800
@@ -78,25 +81,17 @@ while running:
         ball_geschwindigkeit_x *= random.choice((1, -1)) # Zufällige Startrichtung
         ball_geschwindigkeit_y *= random.choice((1, -1))
 
-    if ball.right >= screen_width: # Ball hat rechten Rand verlassen (Spieler punktet / KI verliert "Leben")
-        # In diesem Pong-Spiel ist es nur ein Spielerleben.
-        # Wenn du auch eine Punkteanzeige für die KI möchtest, müsstest du diese hier implementieren.
-        ball.center = (screen_width / 2, screen_height / 2) # Ball zurücksetzen
-        ball_geschwindigkeit_x *= random.choice((1, -1))
-        ball_geschwindigkeit_y *= random.choice((1, -1))
+if ball.right >= screen_width: # Ball hat rechten Rand verlassen (Spieler punktet / KI verliert "Leben")
+    ki_lives -= 1
+    ball.center = (screen_width / 2, screen_height / 2) # Ball zurücksetzen
+    ball_geschwindigkeit_x *= random.choice((1, -1))
+    ball_geschwindigkeit_y *= random.choice((1, -1))
 
-    # --- KI-Logik ---
-    # Die KI versucht, ihr Zentrum an das Zentrum des Balls anzupassen
-    if ki_schlaeger.centery < ball.centery:
-        ki_schlaeger.y += ki_geschwindigkeit
-    if ki_schlaeger.centery > ball.centery:
-        ki_schlaeger.y -= ki_geschwindigkeit
-
-    # KI-Schläger im Bildschirm halten
-    if ki_schlaeger.top < 0:
-        ki_schlaeger.top = 0
-    if ki_schlaeger.bottom > screen_height:
-        ki_schlaeger.bottom = screen_height
+# KI-Schläger Begrenzung (optional, falls du KI bewegst)
+if ki_schlaeger.top < 0:
+    ki_schlaeger.top = 0
+if ki_schlaeger.bottom > screen_height:
+    ki_schlaeger.bottom = screen_height
 
     # --- Zeichnen ---
     screen.fill(schwarz)
