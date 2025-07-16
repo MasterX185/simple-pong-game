@@ -81,17 +81,17 @@ while running:
         ball_geschwindigkeit_x *= random.choice((1, -1)) # Zufällige Startrichtung
         ball_geschwindigkeit_y *= random.choice((1, -1))
 
-if ball.right >= screen_width: # Ball hat rechten Rand verlassen (Spieler punktet / KI verliert "Leben")
-    ki_lives -= 1
-    ball.center = (screen_width / 2, screen_height / 2) # Ball zurücksetzen
-    ball_geschwindigkeit_x *= random.choice((1, -1))
-    ball_geschwindigkeit_y *= random.choice((1, -1))
+    if ball.right >= screen_width: # Ball hat rechten Rand verlassen (Spieler punktet / KI verliert "Leben")
+        ki_lives -= 1
+        ball.center = (screen_width / 2, screen_height / 2) # Ball zurücksetzen
+        ball_geschwindigkeit_x *= random.choice((1, -1))
+        ball_geschwindigkeit_y *= random.choice((1, -1))
 
-# KI-Schläger Begrenzung (optional, falls du KI bewegst)
-if ki_schlaeger.top < 0:
-    ki_schlaeger.top = 0
-if ki_schlaeger.bottom > screen_height:
-    ki_schlaeger.bottom = screen_height
+    # KI-Schläger Begrenzung (optional, falls du KI bewegst)
+    if ki_schlaeger.top < 0:
+        ki_schlaeger.top = 0
+    if ki_schlaeger.bottom > screen_height:
+        ki_schlaeger.bottom = screen_height
 
     # --- Zeichnen ---
     screen.fill(schwarz)
@@ -101,18 +101,22 @@ if ki_schlaeger.bottom > screen_height:
     pygame.draw.aaline(screen, weiss, (screen_width // 2, 0), (screen_width // 2, screen_height))
 
     # Lebensanzeige rendern und anzeigen
-    lives_text = font.render(f"Lives: {player_lives}", True, weiss) # Text mit "Lives: " davor
+    lives_text = font.render(f"Lives: {player_lives}", True, weiss)
     screen.blit(lives_text, (screen_width // 2 - lives_text.get_width() // 2, 20))
 
+    # KI-Lebensanzeige oben rechts anzeigen
+    ki_lives_text = font_ki.render(f"KI: {ki_lives}", True, weiss)
+    screen.blit(ki_lives_text, (screen_width - ki_lives_text.get_width() - 20, 20))
+
     # Spiel beenden, wenn keine Leben mehr übrig sind
-    if player_lives <= 0:
+    if player_lives <= 0 or ki_lives <= 0:
         game_over_text = font.render("GAME OVER", True, weiss)
         screen.blit(game_over_text, (screen_width // 2 - game_over_text.get_width() // 2, screen_height // 2 - game_over_text.get_height() // 2))
-        pygame.display.flip() # Wichtig, um "Game Over" anzuzeigen
-        pygame.time.wait(3000) # 3 Sekunden warten
-        running = False # Spielschleife beenden
+        pygame.display.flip()
+        pygame.time.wait(3000)
+        running = False
 
     pygame.display.flip()
-    uhr.tick(60) # Limitiert das Spiel auf 60 Bilder pro Sekunde
+    uhr.tick(60)
 
 pygame.quit()
