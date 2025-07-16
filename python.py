@@ -1,54 +1,123 @@
 import pygame
+import random # Wichtig: Dieses Modul importieren!
 
 pygame.init()
 
+player_lives = 3
+font = pygame.font.Font(None, 74) # Eine Schriftart für die Anzeige
+
+# --- Fenster- und Farbeinstellungen ---
 screen_width = 800
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Pong")
 
-pygame.display.set_caption("Mein Pygame Fenster")
+schwarz = (0, 0, 0)
+weiss = (255, 255, 255)
 
+# --- Spiel-Objekte ---
+schlaeger_breite = 15
+schlaeger_hoehe = 100
+
+# Spieler-Schläger (links)
+spieler_schlaeger = pygame.Rect(50, (screen_height - schlaeger_hoehe) // 2, schlaeger_breite, schlaeger_hoehe)
+spieler_geschwindigkeit = 0
+
+# KI-Schläger (rechts)
+ki_schlaeger = pygame.Rect(screen_width - 50 - schlaeger_breite, (screen_height - schlaeger_hoehe) // 2, schlaeger_breite, schlaeger_hoehe)
+ki_geschwindigkeit = 4 # Geschwindigkeit der KI
+
+# Ball
+ball = pygame.Rect(screen_width // 2 - 15, screen_height // 2 - 15, 30, 30)
+ball_geschwindigkeit_x = 5
+ball_geschwindigkeit_y = 5
+
+# --- Game Loop ---
+uhr = pygame.time.Clock()
 running = True
 while running:
+    # --- Ereignisbehandlung (User Input) ---
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        # Spielereingabe für Bewegung
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                spieler_geschwindigkeit = -6
+            if event.key == pygame.K_DOWN:
+                spieler_geschwindigkeit = 6
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
+                spieler_geschwindigkeit = 0
 
-    screen.fill((0, 0, 0)) 
+    # --- Bewegungslogik ---
 
-    # Schläger-Parameter definieren
-    schlaeger_breite = 10
-    schlaeger_hoehe = 100
-    schlaeger_farbe = (255, 255, 255)
-    schlaeger_x = 50
-    schlaeger_y = (screen_height - schlaeger_hoehe) // 2
-    schlaeger = pygame.Rect(schlaeger_x, schlaeger_y, schlaeger_breite, schlaeger_hoehe)
+    # Spielerbewegung
+    spieler_schlaeger.y += spieler_geschwindigkeit
+    if spieler_schlaeger.top < 0:
+        spieler_schlaeger.top = 0
+    if spieler_schlaeger.bottom > screen_height:
+        spieler_schlaeger.bottom = screen_height
 
-    laufendes_spiel = True
-    while laufendes_spiel:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                laufendes_spiel = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    # Bewege den Schläger nach oben
-                    schlaeger.y -= 5  # Beispiel: 5 Pixel pro Tastendruck
-                if event.key == pygame.K_DOWN:
-                    # Bewege den Schläger nach unten
-                    schlaeger.y += 5  # Beispiel: 5 Pixel pro Tastendruck
+    # Ballbewegung
+    ball.x += ball_geschwindigkeit_x
+    ball.y += ball_geschwindigkeit_y
 
-        # Stelle sicher, dass der Schläger nicht aus dem Bildschirmbereich herausragt
-        schlaeger.y = max(0, schlaeger.y)
-        schlaeger.y = min(screen_height - schlaeger_hoehe, schlaeger.y)
+    # Ball-Kollision mit Wänden (oben/unten)
+    if ball.top <= 0 or ball.bottom >= screen_height:
+        ball_geschwindigkeit_y *= -1
 
-        # Schläger neu zeichnen
-        screen.fill((0, 0, 0)) # Bildschirm löschen (schwarz)
-        pygame.draw.rect(screen, schlaeger_farbe, schlaeger)
+    # Ball-Kollision mit Schlägern
+    if ball.colliderect(spieler_schlaeger) or ball.colliderect(ki_schlaeger):
+        ball_geschwindigkeit_x *= -1
 
-        # ... (weitere Spiel-Logik, z.B. Ballbewegung und Kollisionserkennung) ...
+    # Überprüfen, ob der Ball den Bildschirm verlässt (Lebensabzug)
+    if ball.left <= 0: # Ball hat linken Rand verlassen (KI punktet / Spieler verliert Leben)
+        player_lives -= 1
+        ball.center = (screen_width / 2, screen_height / 2) # Ball zurücksetzen
+        ball_geschwindigkeit_x *= random.choice((1, -1)) # Zufällige Startrichtung
+        ball_geschwindigkeit_y *= random.choice((1, -1))
 
-        pygame.display.flip()  # Bildschirm aktualisieren
+    if ball.right >= screen_width: # Ball hat rechten Rand verlassen (Spieler punktet / KI verliert "Leben")
+        # In diesem Pong-Spiel ist es nur ein Spielerleben.
+        # Wenn du auch eine Punkteanzeige für die KI möchtest, müsstest du diese hier implementieren.
+        ball.center = (screen_width / 2, screen_height / 2) # Ball zurücksetzen
+        ball_geschwindigkeit_x *= random.choice((1, -1))
+        ball_geschwindigkeit_y *= random.choice((1, -1))
 
-    pygame.display.flip() 
+    # --- KI-Logik ---
+    # Die KI versucht, ihr Zentrum an das Zentrum des Balls anzupassen
+    if ki_schlaeger.centery < ball.centery:
+        ki_schlaeger.y += ki_geschwindigkeit
+    if ki_schlaeger.centery > ball.centery:
+        ki_schlaeger.y -= ki_geschwindigkeit
+
+    # KI-Schläger im Bildschirm halten
+    if ki_schlaeger.top < 0:
+        ki_schlaeger.top = 0
+    if ki_schlaeger.bottom > screen_height:
+        ki_schlaeger.bottom = screen_height
+
+    # --- Zeichnen ---
+    screen.fill(schwarz)
+    pygame.draw.rect(screen, weiss, spieler_schlaeger)
+    pygame.draw.rect(screen, weiss, ki_schlaeger)
+    pygame.draw.ellipse(screen, weiss, ball)
+    pygame.draw.aaline(screen, weiss, (screen_width // 2, 0), (screen_width // 2, screen_height))
+
+    # Lebensanzeige rendern und anzeigen
+    lives_text = font.render(f"Lives: {player_lives}", True, weiss) # Text mit "Lives: " davor
+    screen.blit(lives_text, (screen_width // 2 - lives_text.get_width() // 2, 20))
+
+    # Spiel beenden, wenn keine Leben mehr übrig sind
+    if player_lives <= 0:
+        game_over_text = font.render("GAME OVER", True, weiss)
+        screen.blit(game_over_text, (screen_width // 2 - game_over_text.get_width() // 2, screen_height // 2 - game_over_text.get_height() // 2))
+        pygame.display.flip() # Wichtig, um "Game Over" anzuzeigen
+        pygame.time.wait(3000) # 3 Sekunden warten
+        running = False # Spielschleife beenden
+
+    pygame.display.flip()
+    uhr.tick(60) # Limitiert das Spiel auf 60 Bilder pro Sekunde
 
 pygame.quit()
