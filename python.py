@@ -17,6 +17,7 @@ pygame.display.set_caption("Pong")
 
 schwarz = (0, 0, 0)
 weiss = (255, 255, 255)
+rot = (225, 0, 0)
 
 # --- Spiel-Objekte ---
 schlaeger_breite = 15
