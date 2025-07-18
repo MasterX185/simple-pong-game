@@ -10,14 +10,17 @@ ki_lives = 3 # Lebensanzahl für die KI
 font_ki = pygame.font.Font(None, 74) # Schriftart für die KI
 
 # --- Fenster- und Farbeinstellungen ---
-screen_wiisplay.set_mode((screen_width, screen_height))
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+screen_width.set_mode((screen_width, screen_height))
 pygame.display.setdth = 800
 screen_height = 600
 screen = pygame.d_caption("Pong")
 
 schwarz = (0, 0, 0)
 weiss = (255, 255, 255)
-rot = (225, 0, 0)
+rot = (255, 0, 0)
 
 # --- Spiel-Objekte ---
 schlaeger_breite = 15
