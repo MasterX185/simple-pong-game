@@ -4,7 +4,7 @@ YOU NEED TO INSTALL PYTHON TO RUN THIS GAME:
 
 -go to https://www.python.org/downloads/ ,select the right version and download it
  
-NOTE: USE PYTHON 3.11 FOR A SMOOTHER EXPERIANCE
+NOTE: USE PYTHON 3.11 FOR A SMOOTHER EXPERIENCE (pygame is currently not fully supported on the newest versions)
 
 -run the installation file and follow the instructions
 
