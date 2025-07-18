@@ -13,10 +13,7 @@ font_ki = pygame.font.Font(None, 74) # Schriftart für die KI
 screen_width = 800
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-screen_width.set_mode((screen_width, screen_height))
-pygame.display.setdth = 800
-screen_height = 600
-screen = pygame.d_caption("Pong")
+pygame.display.set_caption("Pong") 
 
 schwarz = (0, 0, 0)
 weiss = (255, 255, 255)
@@ -97,6 +94,17 @@ while running:
     if ki_schlaeger.bottom > screen_height:
         ki_schlaeger.bottom = screen_height
 
+        # KI-Schläger Bewegung (folgt dem Ball)
+    if ball.centery < ki_schlaeger.centery:
+        ki_schlaeger.y -= ki_geschwindigkeit
+    elif ball.centery > ki_schlaeger.centery:
+        ki_schlaeger.y += ki_geschwindigkeit
+
+    # KI-Schläger Begrenzung
+    if ki_schlaeger.top < 0:
+        ki_schlaeger.top = 0
+    if ki_schlaeger.bottom > screen_height:
+        ki_schlaeger.bottom = screen_height
     # --- Zeichnen ---
     screen.fill(schwarz)
     pygame.draw.rect(screen, weiss, spieler_schlaeger)
@@ -113,12 +121,22 @@ while running:
     screen.blit(ki_lives_text, (screen_width - ki_lives_text.get_width() - 20, 20))
 
     # Spiel beenden, wenn keine Leben mehr übrig sind
-    if player_lives <= 0 or ki_lives <= 0:
-        game_over_text = font.render("GAME OVER", True, weiss)
+    if ki_lives <= 0:
+        game_over_text = font.render("YOU WON", True, rot)
+        screen.fill(weiss)  # Bildschirm leeren
         screen.blit(game_over_text, (screen_width // 2 - game_over_text.get_width() // 2, screen_height // 2 - game_over_text.get_height() // 2))
         pygame.display.flip()
         pygame.time.wait(3000)
         running = False
+
+    if player_lives <= 0 :
+        game_over_text = font.render("GAME OVER", True, rot)
+        screen.fill(weiss)  # Bildschirm leeren
+        screen.blit(game_over_text, (screen_width // 2 - game_over_text.get_width() // 2, screen_height // 2 - game_over_text.get_height() // 2))
+        pygame.display.flip()
+        pygame.time.wait(3000)
+        running = False
+
 
     pygame.display.flip()
     uhr.tick(60)
