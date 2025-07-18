@@ -1,5 +1,5 @@
 import pygame 
-import random # Wichtig: Dieses Modul importieren!
+import random 
 
 pygame.init()
 
