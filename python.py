@@ -13,7 +13,7 @@ font_ki = pygame.font.Font(None, 74) # Schriftart für die KI
 screen_width = 800
 screen_height = 600
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Pong-game by MasterX185 - GitHub Repository") 
+pygame.display.set_caption("Pong-game by MasterX185 - GitHub Repository - https://github.com/MasterX185/simple-pong-game") 
 
 schwarz = (0, 0, 0)
 weiss = (255, 255, 255)
