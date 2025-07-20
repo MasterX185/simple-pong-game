@@ -63,6 +63,7 @@ while running:
     if spieler_schlaeger.bottom > screen_height:
         spieler_schlaeger.bottom = screen_height
 
+
     # Ballbewegung
     ball.x += ball_geschwindigkeit_x
     ball.y += ball_geschwindigkeit_y
